@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pv-migration-job-via-s3
+spec:
+  template:
+    spec:
+      volumes:
+        - name: pv-migration-volume-via-s3
+          persistentVolumeClaim:
+            claimName: {SOURCE_PVC}
+        - name: pvc-mig-scripts-volume-via-s3
+          configMap: 
+            name: source-pvc-mig-scripts-via-s3
+            defaultMode: 0777
+        - name: pvc-mig-secrets-volume-via-s3
+          secret: 
+            secretName: pv-mig-secrets-via-s3
+      containers:
+        - name: pv-migration-job-via-s3
+          image: google/cloud-sdk:slim
+          stdin: true
+          stdinOnce: true
+          tty: true
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "/home/entrypoint.sh" ]
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: pv-migration-volume-via-s3
+              mountPath: /home/pvc
+            - name: pvc-mig-scripts-volume-via-s3
+              mountPath: /home
+            - name: pvc-mig-secrets-volume-via-s3
+              mountPath: /home/secrets
+          env:
+            - name: GENERATE_DATA
+              value: "{GENERATE_DATA}"
+            - name: S3_BUCKET 
+              value: "{S3_BUCKET}"
+            - name: PVC_FULL_DATA_PATH
+              value: "/home/pvc/{PVC_DATA_PATH}"
+            - name: SOURCE_PVC
+              value: "{SOURCE_PVC}"
+      restartPolicy: Never

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: large-pv
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteOnce

@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pv-migration-job-p2p
+spec:
+  template:
+    spec:
+      volumes:
+        - name: pv-migration-volume-p2p
+          persistentVolumeClaim:
+            claimName: {SOURCE_PVC}
+        - name: pvc-mig-scripts-volume-p2p
+          configMap: 
+            name: source-pvc-mig-scripts-p2p
+            defaultMode: 0777
+      containers:
+        - name: pv-migration-job-p2p
+          image: google/cloud-sdk:slim
+          stdin: true
+          stdinOnce: true
+          tty: true
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "/home/entrypoint.sh" ]
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: pv-migration-volume-p2p
+              mountPath: /home/pvc
+            - name: pvc-mig-scripts-volume-p2p
+              mountPath: /home
+          env:
+            - name: GENERATE_DATA
+              value: "{GENERATE_DATA}"
+            - name: PVC_DATA_PATH
+              value: "/home/pvc"
+      restartPolicy: Never
