@@ -1,23 +1,10 @@
 
+
+
+
 aws sts get-session-token \
 --serial-number arn:aws:iam::966891400085:mfa/divyanshc@google.com \
 --token-code 951841
-
-
-{
-    "Credentials": {
-        "AccessKeyId": "ASIA6CHZX5OKZDK7D3FR",
-        "SecretAccessKey": "0LEeo/05aCYSDjM7tu3AXSe0Ql5s5wR/iDdy92ln",
-        "SessionToken": "IQoJb3JpZ2luX2VjEDIaCXVzLWVhc3QtMiJHMEUCIQD8q2iIJ/HxrzgtF66KBJO1bxMeQpjS/9BiLRzSZOvOMQIgIgSe9B7eTBnPpLoW+645y8/uiXKiw6dkIEFtvZMcFHoq7wEIOxACGgw5NjY4OTE0MDAwODUiDHgx4b31+00SJOfRuirMAba+1FGfwbTffy7cVnjRPVDGcxwx4FxwjTsAEcvNkwyZi1yhcfcQ7bq2nsD79SE5YPdqRnTLWpm3kp9J16cQ7NCdhIDNWgnM9UI3PHjxqNl3KECeMkzciLnhFrratgbazclIRHNYVTPPUYQ5IDhEICR0wncDGmCy9qZ3AwSO/5+Usm5dep6f26LU9ju2PQj4uO8/1rbqV1FX9+XLko6S+RHRRcnNENFLPZoMWRC96laZsRW/tmImHG1CzzYsqdwvFJLdDPEijP5dXpf+WDDLrfiHBjqYAav5I+uPPTXjch8Fz3AOaL5SehIlDZL81XqTbnmoS01gs5khniZGGhckAxu8pl85pxXYL/KAD+qmHQFGE/1ie85vSSpB8ZJ8npORx747INMLmcsCJEgugO/BZxKcSzMRTElMsLz3Qkbgltx1AN+29K9LqX7OGCEOtfSJnLp7RMt2gklsDArE+CWnSMLuERdPlyBF2yrpCTq5",
-        "Expiration": "2021-07-26T13:58:35+00:00"
-    }
-}
-
-
-export AWS_ACCESS_KEY_ID=ASIA6CHZX5OKZDK7D3FR
-export AWS_SECRET_ACCESS_KEY=0LEeo/05aCYSDjM7tu3AXSe0Ql5s5wR/iDdy92ln
-export AWS_SESSION_TOKEN=IQoJb3JpZ2luX2VjEDIaCXVzLWVhc3QtMiJHMEUCIQD8q2iIJ/HxrzgtF66KBJO1bxMeQpjS/9BiLRzSZOvOMQIgIgSe9B7eTBnPpLoW+645y8/uiXKiw6dkIEFtvZMcFHoq7wEIOxACGgw5NjY4OTE0MDAwODUiDHgx4b31+00SJOfRuirMAba+1FGfwbTffy7cVnjRPVDGcxwx4FxwjTsAEcvNkwyZi1yhcfcQ7bq2nsD79SE5YPdqRnTLWpm3kp9J16cQ7NCdhIDNWgnM9UI3PHjxqNl3KECeMkzciLnhFrratgbazclIRHNYVTPPUYQ5IDhEICR0wncDGmCy9qZ3AwSO/5+Usm5dep6f26LU9ju2PQj4uO8/1rbqV1FX9+XLko6S+RHRRcnNENFLPZoMWRC96laZsRW/tmImHG1CzzYsqdwvFJLdDPEijP5dXpf+WDDLrfiHBjqYAav5I+uPPTXjch8Fz3AOaL5SehIlDZL81XqTbnmoS01gs5khniZGGhckAxu8pl85pxXYL/KAD+qmHQFGE/1ie85vSSpB8ZJ8npORx747INMLmcsCJEgugO/BZxKcSzMRTElMsLz3Qkbgltx1AN+29K9LqX7OGCEOtfSJnLp7RMt2gklsDArE+CWnSMLuERdPlyBF2yrpCTq5
-
 
 Installing Velero on MacOS  
 
@@ -49,17 +36,6 @@ Velero AWS
 
 BUCKET=pvc-cluster-valero-bucket
 REGION=us-east-2
-
-
-{
-    "AccessKey": {
-        "UserName": "velero",
-        "AccessKeyId": "AKIA6CHZX5OKSBAH5L5J",
-        "Status": "Active",
-        "SecretAccessKey": "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",
-        "CreateDate": "2021-07-25T22:43:39+00:00"
-    }
-}
 
 
 
@@ -107,15 +83,6 @@ aws iam put-user-policy \
 
 aws iam create-access-key --user-name gcp-transfer-service
 
-{
-    "AccessKey": {
-        "UserName": "gcp-transfer-service",
-        "AccessKeyId": "AKIA6CHZX5OKWY5SNFZB",
-        "Status": "Active",
-        "SecretAccessKey": "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",
-        "CreateDate": "2021-07-26T02:18:17+00:00"
-    }
-}
 
 aws s3 sync s3://pvc-cluster-valero-bucket .
 
