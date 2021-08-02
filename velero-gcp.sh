@@ -17,7 +17,7 @@ VELERO_ROLE_PERMISSIONS=(
     compute.snapshots.delete
     compute.zones.get
 )
-
+BUCKET=pvc-cluster-valero-bucket #Change the bucket name based on the naming convention and policies 
 
 
 PROJECT_ID=$(gcloud config get-value project)
@@ -51,7 +51,7 @@ gcloud iam service-accounts keys create gcp-credentials-velero \
     --iam-account $VELERO_SERVICE_ACCOUNT_EMAIL
 
 
-BUCKET=pvc-cluster-valero-bucket #Change the bucket name based on the naming convention and policies 
+
 gsutil ls gs://$BUCKET/
 if [[ $? -ne 0 ]]; then
   echo "$BUCKET does not exist. Creating one...."
@@ -67,6 +67,6 @@ echo "Starting backup via Velero"
 EPOCH=`date +%s`
 #velero backup create pv-backup-$EPOCH --exclude-resources secrets,deployments,services,replicaset,endpointslice,configmap,endpoints,namespace,resourcequota,serviceaccount --include-namespaces $NAMESPACE --include-cluster-resources=false --wait
 
-velero backup create pv-backup-$EPOCH --exclude-resources --include-namespaces $NAMESPACE --include-cluster-resources=false --wait
+velero backup create pv-backup-$EPOCH --include-namespaces $NAMESPACE --include-cluster-resources=false --wait
 
 velero restore create pv-restore-$EPOCH --from-backup pv-backup-$EPOCH --namespace-mappings $NAMESPACE:$NEW_NAMESPACE --wait
