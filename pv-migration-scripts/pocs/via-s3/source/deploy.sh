@@ -6,9 +6,9 @@
 
 #set -x
 
-if [$# -ne 7]; then 
+if [$# -ne 9]; then 
     echo "Illegal number of parameters"
-    echo "USAGE ./deploy.sh SRC_KUBE_CONTEXT SRC_NS SOURCE_PVC PVC_DATA_PATH S3_BUCKET GENERATE_DATA CREATE_TEST_PVC"
+    echo "USAGE ./deploy.sh SRC_KUBE_CONTEXT SRC_NS SOURCE_PVC PVC_DATA_PATH S3_BUCKET GENERATE_DATA CREATE_TEST_PVC AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY"
     echo "
     SRC_KUBE_CONTEXT: kube context to use for creating this job
     SRC_NS: namespace to deploy job into (and optionally test PVC)
@@ -28,11 +28,18 @@ PVC_DATA_PATH=$4        # path to the data
 S3_BUCKET=$5            # S3 bucket to copy data to
 GENERATE_DATA=$6        # yes/no; will generate 10 64mb test files in the PV
 CREATE_TEST_PVC=$7      # yes/no; will create a test PVC using the SOURCE_PVC name
+AWS_ACCESS_KEY_ID=$8        # AWS access key ID
+AWS_SECRET_ACCESS_KEY=$9    # AWS secret access key
 
-
+echo "
+[default]
+aws_access_key_id=$AWS_ACCESS_KEY_ID
+aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+" > ./secrets/credentials
 
 # #SRC_OIDC_TOKEN="" # set this here or via env var
 
+# EXAMPLE  env vars
 # GENERATE_DATA="yes"     # yes/no; will generate 10 64mb test files in the PV
 # CREATE_TEST_PVC="yes"   # yes/no; will create a test PVC using the SOURCE_PVC name
 # SRC_NS="alfa"           # namespace to deploy job into (and optionally test PVC)
@@ -41,22 +48,24 @@ CREATE_TEST_PVC=$7      # yes/no; will create a test PVC using the SOURCE_PVC na
 # # AWS Dev Config
 # #SRC_OIDC_TOKEN="" # set this here or via env var
 # SRC_KUBE_CONTEXT="dev.k8s.au-infrastructure.com"
+# S3_BUCKET="rangeli-test-mig-1" # destination bucket
+# SRC_KUBE_CONTEXT="dev.k8s.au-infrastructure.com"
+# SRC_NS="alfa"
+# DEPOYMENT_NAME="pod/cnc-edge-conn-lg-redis-load-generator-0"
+# SOURCE_PVC="redis-dataset-cnc-edge-conn-lg-redis-load-generator-0"
+# PVC_DATA_PATH="/home/pvc"
+# GENERATE_DATA="no"
 
-
-# required env vars
-S3_BUCKET="rangeli-test-mig-1" # destination bucket
-SRC_KUBE_CONTEXT="dev.k8s.au-infrastructure.com"
-SRC_NS="alfa"
-DEPOYMENT_NAME="pod/cnc-edge-conn-lg-redis-load-generator-0"
-SOURCE_PVC="redis-dataset-cnc-edge-conn-lg-redis-load-generator-0"
-PVC_DATA_PATH="/home/pvc"
-GENERATE_DATA="no"
-
-if [ -z "$SRC_OIDC_TOKEN" ]; then echo "SRC_OIDC_TOKEN not set." && exit 1; fi
-
-#Ex. 
-#SRC_OIDC_TOKEN=$(gcloud config config-helper --format="value(credential.access_token)")
-#SRC_OIDC_TOKEN=$(k8s-okta oidc-token --client-id 0oa54lqa1zwIWea3P2p7 | jq -r .status.token)
+if [ -z "$SRC_OIDC_TOKEN" ]; then 
+    echo "env var SRC_OIDC_TOKEN not set."
+    echo "
+    #Ex. 
+    export SRC_OIDC_TOKEN=\$(gcloud config config-helper --format=\"value(credential.access_token)\")
+    export SRC_OIDC_TOKEN=\$(k8s-okta oidc-token --client-id <CLIENTID> | jq -r .status.token)
+    export SRC_OIDC_TOKEN=\$(aws eks get-token --cluster-name <CLUSTERNAME> | jq -r '.status.token')
+    "
+    exit 1 
+fi
 
 kubectl config use-context $SRC_KUBE_CONTEXT
 

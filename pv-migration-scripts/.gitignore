@@ -1,7 +1,10 @@
-configure-secrets.sh
+configure.sh
 env/
 # ignore secrets/ dirs which hold all sensitive info
 pocs/via-s3/dest/secrets/
 pocs/via-s3/source/secrets/
 pocs/p2p/dest/secrets/
 pocs/p2p/source/secrets/
+
+sensitive/
+
