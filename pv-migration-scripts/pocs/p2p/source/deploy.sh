@@ -6,7 +6,7 @@
 
 #set -x
 
-if [$# -ne 5]; then 
+if [ $# -ne 5 ]; then 
     echo "Illegal number of parameters"
     echo "USAGE ./deploy.sh SRC_KUBE_CONTEXT SRC_NS SOURCE_PVC GENERATE_DATA CREATE_TEST_PVC"
     exit 2
@@ -22,8 +22,9 @@ if [ -z "$SRC_OIDC_TOKEN" ]; then
     echo "env var SRC_OIDC_TOKEN not set."
     echo "
     #Ex. 
-    export SRC_OIDC_TOKEN=$(gcloud config config-helper --format="value(credential.access_token)")
-    export SRC_OIDC_TOKEN=$(k8s-okta oidc-token --client-id 0oa54lqa1zwIWea3P2p7 | jq -r .status.token)
+    export SRC_OIDC_TOKEN=\$(gcloud config config-helper --format=\"value(credential.access_token)\")
+    export SRC_OIDC_TOKEN=\$(k8s-okta oidc-token --client-id <CLIENTID> | jq -r .status.token)
+    export SRC_OIDC_TOKEN=\$(aws eks get-token --cluster-name <CLUSTERNAME> | jq -r '.status.token')
     "
     exit 1 
 fi

@@ -9,9 +9,9 @@
 
 # set -x
 
-if [$# -ne 9]; then 
+if [ $# -ne 10 ]; then 
     echo "Illegal number of parameters"
-    echo "USAGE ./deploy.sh CLUSTER DEST_PROJECT DEST_ZONE DEST_NS DEST_PVC SRC_KUBE_CONTEXT SRC_NS CREATE_TEST_PVC SERVICE_ACCOUNT_PATH"
+    echo "USAGE ./deploy.sh CLUSTER DEST_PROJECT DEST_ZONE DEST_NS DEST_PVC SRC_NS CREATE_TEST_PVC SERVICE_ACCOUNT_PATH SOURCE_CLUSTER_CERT SOURCE_CLUSTER_API_HOST"
     exit 2
 fi
 
@@ -19,8 +19,9 @@ if [ -z "$SRC_OIDC_TOKEN" ]; then
     echo "env var SRC_OIDC_TOKEN not set."
     echo "
     #Ex. 
-    export SRC_OIDC_TOKEN=$(gcloud config config-helper --format="value(credential.access_token)")
-    export SRC_OIDC_TOKEN=$(k8s-okta oidc-token --client-id 0oa54lqa1zwIWea3P2p7 | jq -r .status.token)
+    export SRC_OIDC_TOKEN=\$(gcloud config config-helper --format=\"value(credential.access_token)\")
+    export SRC_OIDC_TOKEN=\$(k8s-okta oidc-token --client-id <CLIENTID> | jq -r .status.token)
+    export SRC_OIDC_TOKEN=\$(aws eks get-token --cluster-name <CLUSTERNAME> | jq -r '.status.token')
     "
     exit 1 
 fi
@@ -30,11 +31,57 @@ DEST_PROJECT=$2
 DEST_ZONE=$3
 DEST_NS=$4
 DEST_PVC=$5
-SRC_KUBE_CONTEXT=$6
-SRC_NS=$7
-CREATE_TEST_PVC=$8 # yes/no; will create a test PVC using the DEST_PVC name
-SERVICE_ACCOUNT_PATH=$9
+#SRC_KUBE_CONTEXT=$6
+SRC_KUBE_CONTEXT="p2p-cluster-context"
+SRC_NS=$6
+CREATE_TEST_PVC=$7 # yes/no; will create a test PVC using the DEST_PVC name
+SERVICE_ACCOUNT_PATH=$8
+SOURCE_CLUSTER_CERT=${9}
+SOURCE_CLUSTER_API_HOST=${10}
 
+# SA_PRIVATE_KEY_ID=${10}
+# SA_PRIVATE_KEY=${11}
+# SA_EMAIL=${12}
+# SA_CLIENT_ID=${13}
+
+# configure kubeconfig file
+echo "
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: $SOURCE_CLUSTER_CERT
+    server: $SOURCE_CLUSTER_API_HOST
+  name: p2p-cluster
+contexts:
+- context:
+    cluster: p2p-cluster
+    user: default-user
+  name: p2p-cluster-context
+current-context: p2p-cluster-context
+kind: Config
+preferences: {}
+users:
+- name: default-user
+  user:
+    token:
+" > ./scripts/config
+ 
+# echo "
+# {
+#   \"type\": \"service_account\",
+#   \"project_id\": \"$DEST_PROJECT\",
+#   \"private_key_id\": \"$SA_PRIVATE_KEY_ID\",
+#   \"private_key\": \"$SA_PRIVATE_KEY\",
+#   \"client_email\": \"$SA_EMAIL\",
+#   \"client_id\": \"$SA_CLIENT_ID\",
+#   \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",
+#   \"token_uri\": \"https://oauth2.googleapis.com/token\",
+#   \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",
+#   \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/$(echo $SA_EMAIL | sed s/@/%40/)\"
+# }
+# " > ./secrets/service-account.json
+
+# gcloud auth activate-service-account --key-file="./secrets/service-account.json" #"$SERVICE_ACCOUNT_PATH"
 gcloud auth activate-service-account --key-file="$SERVICE_ACCOUNT_PATH"
 
 gcloud container clusters get-credentials $CLUSTER --zone $DEST_ZONE --project $DEST_PROJECT || exit 1
