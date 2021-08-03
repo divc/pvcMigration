@@ -8,3 +8,5 @@ pocs/p2p/source/secrets/
 
 sensitive/
 
+# my prep file for demos
+prep.sh

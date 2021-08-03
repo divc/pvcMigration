@@ -24,7 +24,7 @@ export CREATE_TEST_PVC="no"                                # yes/no; will create
 export DEST_NS="default"                                   # dest namespace to deploy job into (and optionally test PVC)
 export CLUSTER=""                                          # dest cluster name
 export DEST_PVC=""                                         # dest PVC name
-export DEST_ZONE="us-east4-a"                              # dest zone
+export DEST_ZONE_OR_REGION="us-central1-a"                 # dest zone (or region for regional clusters)
 export DEST_PROJECT=""                                     # dest project id
 
 # GCP Service Account info (for local kubectl runtime)
