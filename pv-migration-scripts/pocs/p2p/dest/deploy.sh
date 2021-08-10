@@ -82,9 +82,11 @@ users:
 # " > ./secrets/service-account.json
 
 # gcloud auth activate-service-account --key-file="./secrets/service-account.json" #"$SERVICE_ACCOUNT_PATH"
-gcloud auth activate-service-account --key-file="$SERVICE_ACCOUNT_PATH"
+#gcloud auth activate-service-account --key-file="$SERVICE_ACCOUNT_PATH"
 
-gcloud container clusters get-credentials $CLUSTER --zone $DEST_ZONE --project $DEST_PROJECT || exit 1
+#gcloud container clusters get-credentials $CLUSTER --zone $DEST_ZONE --project $DEST_PROJECT || exit 1
+
+gcloud container clusters get-credentials $CLUSTER --region $DEST_ZONE --project $DEST_PROJECT || exit 1
 
 kubectl delete job pv-migration-job-p2p -n $DEST_NS
 

@@ -63,10 +63,4 @@ echo "Installing Velero"
 
 velero install --use-restic --provider gcp --plugins velero/velero-plugin-for-gcp:v1.0.0 --bucket $BUCKET --secret-file ./gcp-credentials-velero --wait
 
-echo "Starting backup via Velero"
-EPOCH=`date +%s`
-#velero backup create pv-backup-$EPOCH --exclude-resources secrets,deployments,services,replicaset,endpointslice,configmap,endpoints,namespace,resourcequota,serviceaccount --include-namespaces $NAMESPACE --include-cluster-resources=false --wait
-
-velero backup create pv-backup-$EPOCH --include-namespaces $NAMESPACE --include-cluster-resources=false --wait
-
-velero restore create pv-restore-$EPOCH --from-backup pv-backup-$EPOCH --namespace-mappings $NAMESPACE:$NEW_NAMESPACE --wait
+echo "Velero configured and installed"

@@ -2,13 +2,13 @@
 
 #NAMESPACE=$1
 #PVC_NAME=$2
-REGION=us-east-2
+REGION=us-west-1
 NAMESPACE=default
 PVC_NAME=
 NEW_NAMESPACE=sample
 VELERO_SERVICE_ACCOUNT_NAME=velero-sa
 VELERO_POLICY_NAME=velero
-BUCKET=pvc-cluster-valero-bucket #Change the bucket name based on the naming convention and policies 
+BUCKET=pvc-valero-aws-bucket #Change the bucket name based on the naming convention and policies 
 
 
 aws s3api create-bucket \
@@ -70,12 +70,6 @@ aws iam put-user-policy \
 
 aws iam create-access-key --user-name $VELERO_SERVICE_ACCOUNT_NAME
 
-velero install --use-restic --provider aws --plugins velero/velero-plugin-for-aws:v1.2.0 --bucket $BUCKET --backup-location-config region=$REGION --snapshot-location-config region=$REGION --secret-file ./aws-credentials-velero --wait
+velero install --use-restic --provider aws --plugins velero/velero-plugin-for-aws:v1.2.1 --bucket $BUCKET --backup-location-config region=$REGION --snapshot-location-config region=$REGION --secret-file ./aws-credentials-velero --wait
 
-echo "Starting backup via Velero"
-EPOCH=`date +%s`
-#velero backup create pv-backup-$EPOCH --exclude-resources events,Event,secrets,deployments,services,replicaset,endpointslice,configmap,endpoints,namespace,resourcequota,serviceaccount --include-namespaces default --include-cluster-resources=false --wait
-
-#velero backup create pv-backup-$EPOCH --include-namespaces $NAMESPACE --include-cluster-resources=false --wait
-
-#velero restore create pv-restore-$EPOCH --from-backup pv-backup-$EPOCH --namespace-mappings $NAMESPACE:$NEW_NAMESPACE --wait
+echo "Velero configured and installed"

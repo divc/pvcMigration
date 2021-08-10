@@ -23,7 +23,7 @@
                 "s3:ListMultipartUploadParts"
             ],
             "Resource": [
-                "arn:aws:s3:::pvc-cluster-valero-bucket/*"
+                "arn:aws:s3:::pvc-valero-bucket/*"
             ]
         },
         {
@@ -32,7 +32,7 @@
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::pvc-cluster-valero-bucket"
+                "arn:aws:s3:::pvc-valero-bucket"
             ]
         }
     ]
