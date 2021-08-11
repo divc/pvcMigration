@@ -13,7 +13,7 @@ Challenges:
 
 ## Implementation 
 
-# Installing Velero on GCP/AWS  
+### Installing Velero on GCP/AWS  
 
  - Step 1: Make a copy of configure-env-template.sh file and name it as configure-env.sh
  - Step 2: Fill the environment variables according to the cloud provider
@@ -21,7 +21,35 @@ Challenges:
  - Step 4: Run setup-velero.sh file
 
 ```
+chmod 666 ./setup-velero.sh
 ./setup-velero.sh
 ```
 
-# Backing up cluster resources  
+### Annotating pods so that restic can take raw data backup  
+
+Annotate the pods that are attached to the PVCs for which backups are needed as follows: 
+
+```
+kubectl -n <NAMESPACE_NAME> annotate pod/<POD_NAME> backup.velero.io/backup-volumes=<VOLUME_MOUNT_NAME>
+```
+
+Examples: 
+
+```
+kubectl -n default annotate pod/wordpress-86999dc7d9-4mslz backup.velero.io/backup-volumes=wordpress-persistent-storage
+
+kubectl -n default annotate pod/wordpress-mysql-866bf45d65-ccsrq backup.velero.io/backup-volumes=mysql-persistent-storage
+```
+
+
+### Backing up resources specific to a namespace using Velero 
+
+```
+velero backup create <BACKUP_NAME> --include-resources <COMMO_SEPERATED_RESOURCES_TO_BE_BACKED_UP> --include-namespaces <NAMESPACE> --include-cluster-resources=true --wait
+```
+
+Example: 
+
+```
+velero backup create pv-backup-1 --include-resources secrets,services,deployments,pvc,pv --include-namespaces default --include-cluster-resources=true --wait
+```
