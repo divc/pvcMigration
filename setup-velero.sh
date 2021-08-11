@@ -105,7 +105,9 @@ if [[ $ENVIRONMENT_TO_CONFIGURE = "AWS" || $ENVIRONMENT_TO_CONFIGURE = "BOTH" ]]
 
     sleep 2
     echo $AWS_BUCKET $AWS_REGION
-    velero install --use-restic --provider aws --plugins velero/velero-plugin-for-aws:v1.2.1 --bucket $AWS_BUCKET --backup-location-config region=$AWS_REGION --snapshot-location-config region=$AWS_REGION --secret-file ./aws-credentials-velero --wait
+
+    echo "velero install --use-restic --provider aws --plugins velero/velero-plugin-for-aws:v1.2.1 --bucket $AWS_BUCKET --backup-location-config region=$AWS_REGION --snapshot-location-config region=$AWS_REGION --secret-file ./aws-credentials-velero --wait"
+    #velero install --use-restic --provider aws --plugins velero/velero-plugin-for-aws:v1.2.1 --bucket $AWS_BUCKET --backup-location-config region=$AWS_REGION --snapshot-location-config region=$AWS_REGION --secret-file ./aws-credentials-velero --wait
 
     #velero install --use-restic --provider aws --plugins velero/velero-plugin-for-aws:v1.2.1 --bucket $AWS_BUCKET --secret-file ./aws-credentials-velero --wait
 
