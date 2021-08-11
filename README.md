@@ -15,10 +15,10 @@ Challenges:
 
 # Installing Velero on GCP/AWS  
 
-Step 1: Make a copy of configure-env-template.sh file and name it as configure-env.sh
-Step 2: Fill the environment variables according to the cloud provider 
-Step 3: Make sure you have environment variable $ENVIRONMENT_TO_CONFIGURE set to either "AWS", "GCP" or "BOTH"
-Step 4: Run setup-velero.sh file 
+ - Step 1: Make a copy of configure-env-template.sh file and name it as configure-env.sh
+ - Step 2: Fill the environment variables according to the cloud provider
+ - Step 3: Make sure you have environment variable $ENVIRONMENT_TO_CONFIGURE set to either "AWS", "GCP" or "BOTH"
+ - Step 4: Run setup-velero.sh file
 
 ```
 ./setup-velero.sh
