@@ -1,3 +1,4 @@
 gcp-credentials-velero
 aws-credentials-velero
 velero.md
+configure-env.sh
