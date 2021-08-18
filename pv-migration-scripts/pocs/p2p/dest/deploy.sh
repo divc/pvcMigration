@@ -113,7 +113,7 @@ if [[ "$CREATE_TEST_PVC" == "yes" ]]; then
 
     kubectl apply -f test-pvc.yaml -n $DEST_NS
 
-    #rm test-pvc.yaml
+    rm test-pvc.yaml
 fi
 
 # replace on the template (cheap/hacky templating)
@@ -126,7 +126,7 @@ sed -e "s#{SOURCE_CLUSTER}#$CLUSTER#g" \
 
 kubectl apply -f job.yaml -n $DEST_NS --wait
 
-#rm job.yaml
+rm job.yaml
 
 # #################### Wait for complete status ####################
 STATUS="starting"
