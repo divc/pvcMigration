@@ -3,12 +3,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {DEST_PVC}
+  name: mysql-pv-claim-dest
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {DEST_PVC_SIZE}
+      storage: 1Gi
   
 

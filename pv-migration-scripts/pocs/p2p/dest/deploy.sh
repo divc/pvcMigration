@@ -9,9 +9,9 @@
 
 # set -x
 
-if [ $# -ne 10 ]; then 
+if [ $# -ne 12 ]; then 
     echo "Illegal number of parameters"
-    echo "USAGE ./deploy.sh CLUSTER DEST_PROJECT DEST_ZONE_OR_REGION DEST_NS DEST_PVC SRC_NS CREATE_TEST_PVC SERVICE_ACCOUNT_PATH SOURCE_CLUSTER_CERT SOURCE_CLUSTER_API_HOST"
+    echo "USAGE ./deploy.sh CLUSTER DEST_PROJECT DEST_ZONE_OR_REGION DEST_NS DEST_PVC SRC_NS CREATE_TEST_PVC SERVICE_ACCOUNT_PATH SOURCE_CLUSTER_CERT SOURCE_CLUSTER_API_HOST IS_REGIONAL_CLUSTER SOURCE_PVC_SIZE"
     exit 2
 fi
 
@@ -38,6 +38,8 @@ CREATE_TEST_PVC=$7 # yes/no; will create a test PVC using the DEST_PVC name
 SERVICE_ACCOUNT_PATH=$8
 SOURCE_CLUSTER_CERT=${9}
 SOURCE_CLUSTER_API_HOST=${10}
+IS_REGIONAL_CLUSTER=${11}
+SOURCE_PVC_SIZE=${12}
 
 # SA_PRIVATE_KEY_ID=${10}
 # SA_PRIVATE_KEY=${11}
@@ -84,7 +86,14 @@ users:
 # gcloud auth activate-service-account --key-file="./secrets/service-account.json" #"$SERVICE_ACCOUNT_PATH"
 #gcloud auth activate-service-account --key-file="$SERVICE_ACCOUNT_PATH"
 
-(gcloud container clusters get-credentials $CLUSTER --zone $DEST_ZONE_OR_REGION --project $DEST_PROJECT || gcloud container clusters get-credentials $CLUSTER --region $DEST_ZONE --project $DEST_PROJECT) || exit 1
+if [ "$IS_REGIONAL_CLUSTER" == "true" ] 
+then
+  gcloud container clusters get-credentials $CLUSTER --region $DEST_ZONE_OR_REGION --project $DEST_PROJECT
+else 
+  gcloud container clusters get-credentials $CLUSTER --zone $DEST_ZONE_OR_REGION --project $DEST_PROJECT 
+fi 
+
+#(gcloud container clusters get-credentials $CLUSTER --zone $DEST_ZONE_OR_REGION --project $DEST_PROJECT || gcloud container clusters get-credentials $CLUSTER --region $DEST_ZONE_OR_REGION --project $DEST_PROJECT) || exit 1
 
 
 kubectl delete job pv-migration-job-p2p -n $DEST_NS
@@ -99,11 +108,12 @@ if [[ "$CREATE_TEST_PVC" == "yes" ]]; then
     # kubectl delete PersistentVolumeClaim $DEST_PVC -n $DEST_NS --wait
 
     sed -e "s#{DEST_PVC}#$DEST_PVC#g" \
+        -e "s#{DEST_PVC_SIZE}#$SOURCE_PVC_SIZE#g" \
     test-pvc-template.yaml > test-pvc.yaml
 
     kubectl apply -f test-pvc.yaml -n $DEST_NS
 
-    rm test-pvc.yaml
+    #rm test-pvc.yaml
 fi
 
 # replace on the template (cheap/hacky templating)
@@ -116,7 +126,7 @@ sed -e "s#{SOURCE_CLUSTER}#$CLUSTER#g" \
 
 kubectl apply -f job.yaml -n $DEST_NS --wait
 
-rm job.yaml
+#rm job.yaml
 
 # #################### Wait for complete status ####################
 STATUS="starting"

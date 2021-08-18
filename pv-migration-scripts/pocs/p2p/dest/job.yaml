@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pv-migration-job-p2p
+spec:
+  template:
+    spec:
+      volumes:
+        - name: pv-migration-volume-p2p
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim-dest
+        - name: pvc-mig-scripts-volume-p2p
+          configMap: 
+            name: dest-pvc-mig-scripts-p2p
+            defaultMode: 0777
+      containers:
+        - name: pv-migration-job-p2p
+          image: google/cloud-sdk:slim
+          stdin: true
+          stdinOnce: true
+          tty: true
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "/home/entrypoint.sh" ]
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: pv-migration-volume-p2p
+              mountPath: /home/pvc
+            - name: pvc-mig-scripts-volume-p2p
+              mountPath: /home
+          env:
+            - name: SRC_NS
+              value: "sample"
+            - name: SRC_DIR
+              value: "/home/pvc/"
+            - name: THIS_DIR
+              value: "/home/pvc"
+            - name: OIDC_TOKEN
+              value: "k8s-aws-v1.aHR0cHM6Ly9zdHMudXMtd2VzdC0xLmFtYXpvbmF3cy5jb20vP0FjdGlvbj1HZXRDYWxsZXJJZGVudGl0eSZWZXJzaW9uPTIwMTEtMDYtMTUmWC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BU0lBNkNIWlg1T0tTUDU3QktHSSUyRjIwMjEwODE3JTJGdXMtd2VzdC0xJTJGc3RzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyMTA4MTdUMTkzNDU4WiZYLUFtei1FeHBpcmVzPTYwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCUzQngtazhzLWF3cy1pZCZYLUFtei1TZWN1cml0eS1Ub2tlbj1JUW9KYjNKcFoybHVYMlZqRUZNYUNYVnpMWGRsYzNRdE1TSkhNRVVDSVFDZHFqcHZ0ZVhNVXRVcUlndyUyRkFFdVNsZDU4YjF4OGtEM1ExV3FXN3d3cVFRSWdIWk9jenZLcE1IRjBKVjE4QmUzcDRZSHNCJTJCR2klMkJWNTRJRWZINXI0VHRROHE3d0VJZkJBQ0dndzVOalk0T1RFME1EQXdPRFVpRFB1YjlpN0NNM1hKczI2MUlpck1BYlpvdHNWSm9DVVp1SEZyVGdpTVJrcWJsd1B0Z3BmYWt6NDRCc1BTOEo3bkJ4cHVITmhacmJhbHBpNzJQa3F2dHJpbDFxOFBpQlM2JTJCdUVMUiUyRjFJQmtRRkdjdkFZckJjWHpPTzhjWjRkc3h6TFZGMzNzOVF4U1NCY2JJSExLWTglMkI5MGxpSUpRMWg1WGI2REcwd243alBYTXpOSGw4SnclMkZoRTlQRmZBbXgxdXhwdmdhcWlZYWdET0VJanYlMkJFN1lWa3lnJTJCQjRsM1ByVG1MSzhOajY1c2RDNVd0dTFaRks3cVJCJTJGU0M4SmFqeTlldXIlMkZkbGlrbjNWTTdpQXl3MnoxQ2F3aEslMkZzMVJ1JTJGSzdqeVRKd3pEcWglMkZDSUJqcVlBZmxyV01GR2wxN0FmSHlPUkpnRW5vR01IYnpyR2tuR2pJOTdIYXRJeDg0dDZOMEFVeGxhUHVJWUhPeE05SjlPQ2huTEJ2ODJiT05zWm8yVEY1UzhYaGZGa2JUJTJGWEtiQmF2N3lXaFRMUiUyQlRIRFNmcEJnUFowc1R6TGV2dGZ6dFlFWVp5dUNCc1VrUjZadVNhU2l6QTNKR3o5dmJoTSUyRiUyQiUyQmR2aHJHdmtDJTJGRndTWVYybFlSWVRjRk9GJTJCNVdCOTZJYWx3V1NEMEwyVkR0ZCZYLUFtei1TaWduYXR1cmU9Mjk5NTVjNTQ4NTlhYTZlMjBhYzUzNDc2NzRkY2FmMjNlNmRjMzA4YTFlNDhhOGZhMDE2YjgyY2Q2ZjM2ZmNiOA"
+            - name: KUBE_CONTEXT
+              value: "p2p-cluster-context"
+      restartPolicy: Never
